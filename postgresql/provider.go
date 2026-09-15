@@ -123,7 +123,6 @@ func Provider() *schema.Provider {
 			"gcp_credentials_path": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     "",
 				Description: "Path to GCP credentials file",
 			},
 
@@ -293,11 +292,11 @@ func getRDSAuthToken(region string, profile string, role string, username string
 	return token, err
 }
 
-func createGoogleCredsFileIfNeeded(gcpCredentialsPath string) error {
-	const GoogleCredentialsEnvVar = "GOOGLE_APPLICATION_CREDENTIALS"
+const googleCredentialsEnvVar = "GOOGLE_APPLICATION_CREDENTIALS"
 
+func createGoogleCredsFileIfNeeded(gcpCredentialsPath string) error {
 	if gcpCredentialsPath != "" {
-		return os.Setenv(GoogleCredentialsEnvVar, gcpCredentialsPath)
+		return os.Setenv(googleCredentialsEnvVar, gcpCredentialsPath)
 	}
 
 	if _, err := google.FindDefaultCredentials(context.Background()); err == nil {
@@ -320,7 +319,7 @@ func createGoogleCredsFileIfNeeded(gcpCredentialsPath string) error {
 		return fmt.Errorf("could not write in temporary file: %w", err)
 	}
 
-	return os.Setenv(GoogleCredentialsEnvVar, tmpFile.Name())
+	return os.Setenv(googleCredentialsEnvVar, tmpFile.Name())
 }
 
 func acquireAzureOauthToken(tenantId string) (string, error) {
